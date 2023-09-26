@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=5">
+    <title>Prawn Box</title>
+  </head>
+  <body>
+    <main>
+      <nav>
+        <h1>Prawn Box</h1>
+        <span><button type="button" id="evalRb">Eval</button></span>
+      </nav>
+      <textarea id="editor" style="width:20%;height:800px">
+      </textarea>
+      <embed id="output" type="application/pdf" width="75%" height="800px"></embed>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@latest/dist/browser.umd.js"></script>
+    <script>
+      const { DefaultRubyVM } = window["ruby-wasm-wasi"]
+
+      class PrawnBox {
+        constructor(vm) {
+          this.vm = vm
+          vm.eval(`
+            require "rubygems"
+            $:.unshift("/lib")
+            require "prawn"
+          `)
+        }
+
+        preview(rb_text) {
+          const rubySource = `
+            pdf = Prawn::Document.new
+            pdf.instance_eval do
+              ${rb_text}
+            end
+            pdf.render`
+
+          return this.vm.eval(rubySource).toString()
+        }
+      }
+
+      async function main() {
+        const appWasm = await fetch("app.wasm")
+        const buffer = await appWasm.arrayBuffer()
+        const module = await WebAssembly.compile(buffer)
+        const { vm } = await DefaultRubyVM(module)
+
+        const prawnBox = new PrawnBox(vm)
+        const input = document.getElementById("editor")
+        const output = document.getElementById("output")
+        document.getElementById("evalRb").addEventListener("click", () => {
+          const pdfContent = prawnBox.preview(input.value)
+          const pdfBlob = new Blob([pdfContent], { type: "application/pdf" })
+          output.src = URL.createObjectURL(pdfBlob)
+        })
+      }
+      main()
+    </script>
+  </body>
+</html>
