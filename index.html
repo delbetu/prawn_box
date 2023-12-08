@@ -12,6 +12,80 @@
         <span><button type="button" id="evalRb">Eval</button></span>
       </nav>
       <textarea id="editor" style="width:20%;height:800px">
+        # Invoice configuration
+        invoice_data = {
+          issuance_date: '12/08/2023',
+          due_date: '01/08/2024',
+          total: 1000.00
+        }
+
+        # Provider's information
+        provider_data = {
+          name: 'Company Name',
+          address: '123 Main Street, City',
+          email: 'info@company.com',
+          bank_account: '123-456-789',
+        }
+
+        # Purchaser's information
+        purchaser_data = {
+          name: 'Customer Name',
+          address: '456 Secondary Street, City',
+          email: 'customer@email.com'
+        }
+
+        # Create invoice header
+        text 'INVOICE', size: 18, style: :bold
+        move_down 10
+        text "Issuance Date: #{invoice_data[:issuance_date]}"
+        text "Due Date: #{invoice_data[:due_date]}"
+        move_down 20
+
+        # Information of Provider and Purchaser in the same row
+        table([[
+          { content: 'Provider Information', colspan: 2, font_style: :bold },
+          { content: 'Purchaser Information', colspan: 2, font_style: :bold }
+        ], [
+          "Name: #{provider_data[:name]}",
+          "Address: #{provider_data[:address]}",
+          "Name: #{purchaser_data[:name]}",
+          "Address: #{purchaser_data[:address]}"
+        ], [
+          "Email: #{provider_data[:email]}",
+          "Bank Account: #{provider_data[:bank_account]}",
+          "Email: #{purchaser_data[:email]}",
+          ""
+        ]], width: 500) do
+          cells.borders = []
+          columns(0..3).size = 10
+        end
+
+        move_down 20
+
+        # Table of Items
+        items = [
+          { description: 'Product 1', price: 250.00, quantity: 2 },
+          { description: 'Product 2', price: 150.00, quantity: 3 },
+          { description: 'Product 3', price: 100.00, quantity: 1 }
+        ]
+
+        table_data = [['Description', 'Price', 'Quantity', 'Total']]
+        items.each do |item|
+          total_item = item[:price] * item[:quantity]
+          table_data << [item[:description], item[:price], item[:quantity], total_item]
+        end
+
+        table(table_data, header: true, width: 500) do
+          row(0).font_style = :bold
+          columns(1..3).align = :center
+          columns(0..3).size = 10
+        end
+
+        move_down 20
+
+        # Section showing the sum of items
+        total_general = items.map { |item| item[:price] * item[:quantity] }.sum
+        text "Total Amount: #{total_general}", size: 14, style: :bold
       </textarea>
       <embed id="output" type="application/pdf" width="75%" height="800px"></embed>
     </main>
