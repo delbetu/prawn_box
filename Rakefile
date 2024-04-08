@@ -31,12 +31,17 @@ end
 file "app.wasm" => ["Gemfile.lock", "wasi-vfs", "ruby.wasm"] do
   require "bundler/setup"
 
-  # copy gems from bundler directories into lib directory
+  # copy gems from bundler directories into "./lib" directory
   prawn_lib_dir =  $:.find { _1.match?(/prawn-\d\.\d\.\d/)}
+  cp_r prawn_lib_dir, "."
+
+  prawn_table_lib_dir =  $:.find { _1.match?(/prawn-table-\d\.\d\.\d/)}
+  cp_r prawn_table_lib_dir, "."
+
   # copy assets
   prawn_fonts_files = prawn_lib_dir + "/../data/fonts/"
-  cp_r prawn_lib_dir, "."
   cp_r prawn_fonts_files, "./head-wasm32-unknown-wasi-full-js/usr/local/lib/afm"
+
   # copy dependencies
   cp_r $:.find { _1.include?("ttfunk") }, "."
   cp_r $:.find { _1.include?("pdf-core") }, "."
