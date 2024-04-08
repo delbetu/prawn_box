@@ -3,3 +3,5 @@
 /ruby.wasm
 /app.wasm
 /wasi-vfs
+!/node_modules/@ruby/wasm-wasi/dist/browser.umd.js
+/node_modules

@@ -90,7 +90,9 @@
       <embed id="output" type="application/pdf" width="75%" height="800px"></embed>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@latest/dist/browser.umd.js"></script>
+    <!-- WARNING: patching script -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@latest/dist/browser.umd.js"></script> -->
+    <script src="/node_modules/@ruby/wasm-wasi/dist/browser.umd.js"></script>
     <script>
       const { DefaultRubyVM } = window["ruby-wasm-wasi"]
 
