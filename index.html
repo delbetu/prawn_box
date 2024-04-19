@@ -4,14 +4,80 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=5">
     <title>Prawn Box</title>
+<style>
+  #controls {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 10px;
+  }
+  #controls > * {
+    margin-bottom: 5px;
+  }
+  #controls button {
+    font-family: sans-serif;
+    background: #eee;
+    border: 1px solid #666;
+    border-radius: 5px;
+    padding: 2px 5px;
+  }
+  #controls button.active {
+    background: #eef;
+    border-color: #55b;
+    color: #005;
+  }
+  #controls button:hover {
+    background: white;
+  }
+  #controls button:active {
+    background: #ccc;
+  }
+  #controls .separator {
+    flex-grow: 1;
+  }
+
+  #surface {
+    display: flex;
+    align-content: stretch;
+    align-items: stretch;
+    height: 100vh;
+    position: relative;
+    border: 1px solid #666;
+  }
+  #editor, #output {
+    flex-basis: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    display: none;
+  }
+  #output iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  #editor .cm-editor {
+    height: 100%;
+    max-height: none;
+    border: none;
+  }
+  #editor .cm-scroller {
+    overflow: auto;
+  }
+
+  @media screen and (min-width: 1200px) {
+    #tab_editor { display: none }
+    article, header, footer nav { max-width: 1150px; }
+    #editor { display: block !important; border-right: 1px solid #666; }
+    #editor, #output { flex-basis: 50%; width: 50%; }
+  }
+  @media screen and (max-width: 570px) {
+    #controls .separator {
+      flex-basis: 100%;
+    }
+  }
+</style>
   </head>
   <body>
-    <main>
-      <nav>
-        <h1>Prawn Box</h1>
-        <span><button type="button" id="evalRb">Eval</button></span>
-      </nav>
-      <textarea id="editor" style="width:20%;height:800px">
+    <pre id="initial-code" style="display: none;">
         # Invoice configuration
         invoice_data = {
           issuance_date: '12/08/2023',
@@ -86,9 +152,25 @@
         # Section showing the sum of items
         total_general = items.map { |item| item[:price] * item[:quantity] }.sum
         text "Total Amount: #{total_general}", size: 14, style: :bold
-      </textarea>
-      <embed id="output" type="application/pdf" width="75%" height="800px"></embed>
+    </pre>
+
+    <main>
+      <nav id="controls">
+        <h1>Prawn Box</h1>
+        <span><button type="button" id="evalRb">Eval</button></span>
+      </nav>
+      <div id="surface">
+        <div id="editor" style="display: block;"></div>
+        <embed id="output" type="application/pdf" style="display: block;"></embed>
+      </div>
     </main>
+
+    <!-------------------- CODEMIRROR -------------------->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror/mode/ruby/ruby.css">
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/lib/codemirror.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/codemirror/mode/ruby/ruby.js"></script>
+    <!-------------------- CODEMIRROR END -------------------->
 
     <!-- WARNING: patching script -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/@ruby/wasm-wasi@latest/dist/browser.umd.js"></script> -->
@@ -115,26 +197,36 @@
             end
             pdf.render`
 
+          console.debug(rubySource)
           return this.vm.eval(rubySource).toString()
         }
       }
 
       async function main() {
+        const codeEditor = CodeMirror(document.getElementById('editor'), {
+          lineNumbers: true,
+          mode: 'ruby',
+          theme: 'default',
+          viewportMargin: Infinity
+        })
+        codeEditor.setValue(document.getElementById('initial-code').textContent)
+        codeEditor.setSize(null, '100%')
+
         const appWasm = await fetch("app.wasm")
         const buffer = await appWasm.arrayBuffer()
         const module = await WebAssembly.compile(buffer)
         const { vm } = await DefaultRubyVM(module)
 
         const prawnBox = new PrawnBox(vm)
-        const input = document.getElementById("editor")
         const output = document.getElementById("output")
         document.getElementById("evalRb").addEventListener("click", () => {
-          const pdfContent = prawnBox.preview(input.value)
+          const pdfContent = prawnBox.preview(codeEditor.getValue())
           const pdfBlob = new Blob([pdfContent], { type: "application/pdf" })
           output.src = URL.createObjectURL(pdfBlob)
         })
       }
-      main()
+
+      document.addEventListener('DOMContentLoaded', main)
     </script>
   </body>
 </html>
