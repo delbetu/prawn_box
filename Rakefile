@@ -51,3 +51,12 @@ file "app.wasm" => ["Gemfile.lock", "wasi-vfs", "ruby.wasm"] do
 end
 
 task default: ["app.wasm"]
+
+desc "Build site into /dist"
+file :build_site => ["app.wasm"] do
+  rm_rf "dist"
+  mkdir "dist"
+  cp_r "assets", "dist"
+  cp "app.wasm", "dist"
+  cp "index.html", "dist"
+end
