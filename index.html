@@ -227,8 +227,6 @@ text "Total Amount: #{total_general}", size: 14, style: :bold
     /*-------------------- ERROR POPUP END --------------------*/
 
     <script>
-      const { DefaultRubyVM } = window["ruby-wasm-wasi"]
-
       class PrawnBox {
         constructor(vm) {
           this.vm = vm
@@ -269,6 +267,7 @@ text "Total Amount: #{total_general}", size: 14, style: :bold
         const appWasm = await fetch("app.wasm")
         const buffer = await appWasm.arrayBuffer()
         const module = await WebAssembly.compile(buffer)
+        const { DefaultRubyVM } = window["ruby-wasm-wasi"]
         const { vm } = await DefaultRubyVM(module)
 
         const prawnBox = new PrawnBox(vm)
