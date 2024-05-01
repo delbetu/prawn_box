@@ -57,6 +57,7 @@ file :build_site => ["app.wasm"] do
   rm_rf "dist"
   mkdir "dist"
   cp_r "assets", "dist"
+  cp_r "@ruby", "dist"
   cp "app.wasm", "dist"
   cp "index.html", "dist"
 end
