@@ -785,6 +785,7 @@
             this.guest.rubyInit();
             this.guest.rubySysinit(c_args);
             this.guest.rubyOptions(c_args);
+            // this.eval(`require "bundle/setup"`);
             // PATCH
             this.eval(`require "bundler/setup"`);
         }

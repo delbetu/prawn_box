@@ -53,7 +53,7 @@ end
 task default: ["app.wasm"]
 
 desc "Build site into /dist"
-file :build_site => ["app.wasm"] do
+task :build_site do
   rm_rf "dist"
   mkdir "dist"
   cp_r "assets", "dist"

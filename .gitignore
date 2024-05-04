@@ -1,7 +1,6 @@
 # Ignore everything to do with building the app.wasm file.
 /head-wasm32-unknown-wasi-full-js/
 /ruby.wasm
-/app.wasm
 /wasi-vfs
 !/node_modules/@ruby/wasm-wasi/dist/browser.umd.js
 /node_modules
