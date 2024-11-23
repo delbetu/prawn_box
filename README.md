@@ -1,3 +1,15 @@
+# Prawnbox
+
+Fast preview your prawn code.
+Type the ruby code in the left side, click preview check the output pdf on the right side.
+
+If you're a ruby developer you probably had to write code that produces a pdf using prawn.  
+The process for writing previewing usually involve several steps such us save the file, go to browser generate the pdf, find what is wrong, fix and repeat.
+
+This tool aims to streamline that process by providing a split view code | pdf-preview.
+
+It uses WebAssembly under the hood so it can interpret your ruby code.
+
 # Website
 
 https://delbetu.github.io/prawn_box/
