@@ -36,10 +36,10 @@ To run the application locally, you should:
 
 The system is composed of:
 
-app.wasm    ==> ruby interpreter + gems installed into a virtual file system and compiled to wasm
-Gemfile     ==> Hold dependencies (prawn, prawn-table) to be included in app.wasm
-Rakefile    ==> app.wasm task holds the building process for app.wasm
-index.html  ==> UI (creates a webassembly module for app.wasm using ruby-wasm-wasi npm package from ruby.wasm)
+app.wasm    ==> ruby interpreter + gems installed into a virtual file system and compiled to wasm  
+Gemfile     ==> Hold dependencies (prawn, prawn-table) to be included in app.wasm  
+Rakefile    ==> app.wasm task holds the building process for app.wasm  
+index.html  ==> UI (creates a webassembly module for app.wasm using ruby-wasm-wasi npm package from ruby.wasm)  
 
 ## How pdf generation works
 The main view needs to eval ruby code using the prawn library.
